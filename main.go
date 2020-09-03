@@ -81,7 +81,6 @@ func main() {
 	for _, i := range pList {
 		switch {
 		case i.Price <= money && i.Amount > 0:
-			// fmt.Println(no, i.Name)
 			fmt.Fprintf(w, "\n %d\t%q\t%d\t%d\t", i.ID, i.Name, i.Price, i.Amount)
 
 		case money < i.Price:
