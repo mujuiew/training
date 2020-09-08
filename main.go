@@ -2,142 +2,125 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"os"
-	"text/tabwriter"
 )
 
-//Product type
-type Product struct {
-	Flag   bool
-	ID     int
-	Name   string
-	Price  int
-	Amount int
-}
-
 var money int
+var ch string
+var x bool
 var idProduct int
 var change float64
+var productName string
+var productID int
+var productPrice int
+var productAmount int
+var elements = map[string]map[string]int{
+	"Coke": map[string]int{
+		"id":     1,
+		"price":  12,
+		"amount": 0,
+	},
+	"Water": map[string]int{
+		"id":     2,
+		"price":  7,
+		"amount": 20,
+	},
+	"Milk": map[string]int{
+		"id":     3,
+		"price":  22,
+		"amount": 20,
+	},
+}
 
-func checknull() {
-	test := Product{
-		Flag:   false,
-		ID:     0,
-		Name:   "",
-		Price:  0,
-		Amount: 0,
+func main() {
+
+	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
+	fmt.Println("----\t", "----\t", "----\t", "----\t")
+	for k := range elements {
+		if el, ok := elements[k]; ok {
+			fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
+			if productID == 0 || productID < el["id"] {
+				productID = el["id"]
+			}
+		}
 	}
-	fmt.Println("test")
-	if test.Flag != false {
-		fmt.Println("true :", test)
+	choose()
+}
+func choose() {
+	fmt.Print("\nหากต้องการเพิ่มสิน add ซื้อสินค้ากด get จบการทำงานกด exit: ")
+	fmt.Scanf("%s", &ch)
+	if ch == "add" {
+		addProduct()
+		getProduct()
+		choose()
+	} else if ch == "get" {
+		getProduct()
+		choose()
+	} else if ch == "exit" {
+		exit()
 	} else {
-		fmt.Println("false :", test)
+		choose()
 	}
 }
-func main() {
-	checknull()
-	pList := [3]Product{}
-	pList[0] = Product{
-		ID:     1,
-		Name:   "Coca-Cola",
-		Price:  20,
-		Amount: 0,
+func addProduct() {
+	fmt.Print("ชื่อสินค้า: ")
+	fmt.Scanf("%s", &productName)
+	fmt.Print("ราคาสินค้า: ")
+	fmt.Scanf("%d", &productPrice)
+	fmt.Print("จำนวนสินค้า: ")
+	fmt.Scanf("%d", &productAmount)
+	elements[productName] = map[string]int{
+		"id":     productID + 1,
+		"price":  productPrice,
+		"amount": productAmount,
 	}
-	pList[1] = Product{
-		ID:     2,
-		Name:   "Water",
-		Price:  7,
-		Amount: 20,
+	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
+	fmt.Println("----\t", "----\t", "----\t", "----\t")
+	for k := range elements {
+		if el, ok := elements[k]; ok {
+			fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
+		}
 	}
-	pList[2] = Product{
-		ID:     3,
-		Name:   "Milk",
-		Price:  18,
-		Amount: 20,
-	}
-	fmt.Println("Product All")
-	// Product All
-	w := new(tabwriter.Writer)
-	// minwidth, tabwidth, padding, padchar, flags
-	w.Init(os.Stdout, 8, 8, 0, '\t', 0)
-	fmt.Fprintf(w, " %s\t%s\t%s\t%s\t", "ID", "Name", "Price", "Amount")
-	fmt.Fprintf(w, "\n %s\t%s\t%s\t%s\t", "----", "----", "----", "----")
-	for _, i := range pList {
-		fmt.Fprintf(w, "\n %d\t%q\t%d\t%d\t", i.ID, i.Name, i.Price, i.Amount)
-	}
-	w.Flush()
-	fmt.Println("\n ")
-
+}
+func getProduct() {
 	fmt.Print("ใส่เงิน (บาทถ้วน): ")
 	fmt.Scanf("%d", &money)
 	fmt.Println("จำนวนเงินของคุณคือ ", money, " บาท")
-	fmt.Println("\nสินค้าที่คุณสามารถเลือกซื้อได้\n-----")
-
-	// minwidth, tabwidth, padding, padchar, flags
-	w.Init(os.Stdout, 8, 8, 0, '\t', 0)
-	fmt.Fprintf(w, " %s\t%s\t%s\t%s\t", "ID", "Name", "Price", "Amount")
-	fmt.Fprintf(w, "\n %s\t%s\t%s\t%s\t", "----", "----", "----", "----")
-	for _, i := range pList {
-		switch {
-		case i.Price <= money && i.Amount > 0:
-			fmt.Fprintf(w, "\n %d\t%q\t%d\t%d\t", i.ID, i.Name, i.Price, i.Amount)
-
-		case money < i.Price:
-			fmt.Println("ขออภัย! จำนวนเงินของคุณไม่เพิ่งพอในการเลือกซื้อสินค้า")
-			fmt.Println("เงินทอน ", money, " บาท")
+	fmt.Println("\nสินค้าที่คุณสามารถเลือกซื้อได้\n ")
+	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
+	fmt.Println("----\t", "----\t", "----\t", "----\t")
+	for k := range elements {
+		if el, ok := elements[k]; ok {
+			if el["price"] <= money && el["amount"] > 0 {
+				fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
+				x = true
+			} else {
+				fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
+				x = false
+			}
 		}
 	}
-	w.Flush()
-
-	fmt.Print("\n-----\nกรุณาใส่รหัสสินค้า : ")
-	fmt.Scanf("%d", &idProduct)
-	fmt.Print("รหัสสินค้า : ", idProduct)
-
-	// InputIdProduct:
-	for _, i := range pList {
-
-		switch {
-		case i.Price <= money && idProduct == i.ID && i.Amount > 0:
-			fmt.Println("\nสินค้าที่เลือกคือ ", i.Name, " ราคา ", i.Price, " บาท")
-			change = float64(money - i.Price)
-			fmt.Println("\nกรุณารับเงินทอน : ", change, " บาท")
-			cal()
-			// break InputIdProduct
-		case i.Price > money && idProduct == i.ID:
-			fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
-			// break InputIdProduct
-		case idProduct == i.ID && i.Amount < 1:
-			fmt.Println("\nขออภัย! สินค้าหมด")
-			// break InputIdProduct
+	fmt.Print("\n")
+	if x {
+		fmt.Print("\n-----\nกรุณาใส่รหัสสินค้า : ")
+		fmt.Scanf("%d", &idProduct)
+		fmt.Print("รหัสสินค้า : ", idProduct)
+		for k := range elements {
+			if el, ok := elements[k]; ok {
+				switch {
+				case el["price"] <= money && idProduct == el["id"] && el["amount"] > 0:
+					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el["price"], " บาท")
+					change = float64(money - el["price"])
+					fmt.Println("\nกรุณารับเงินทอน : ", change, " บาท")
+					// cal()
+				case el["price"] > money && idProduct == el["id"]:
+					fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
+				case idProduct == el["id"] && el["amount"] < 1:
+					fmt.Println("\nขออภัย! สินค้าหมด")
+				}
+			}
 		}
 	}
-
 }
 
-func cal() {
-	if change >= 10 {
-		sum10 := change / 10
-		sum10s := math.Floor(sum10) * 10
-		change = change - sum10s
-		fmt.Println("มีจำนวนเหรียญ 10 = ", math.Floor(sum10), " เหรียญ")
-	}
-	if change >= 5 {
-		sum5 := change / 5
-		sum5s := math.Floor(sum5) * 5
-		change = change - sum5s
-		fmt.Println("มีจำนวนเหรียญ 5 = ", math.Floor(sum5), " เหรียญ")
-	}
-	if change >= 2 {
-		sum2 := change / 2
-		sum2s := math.Floor(sum2) * 2
-		change = change - sum2s
-		fmt.Println("มีจำนวนเหรียญ 2 = ", math.Floor(sum2), " เหรียญ")
-	}
-	if change >= 1 {
-		sum1 := change / 1
-		sum1s := math.Floor(sum1) * 1
-		change = change - sum1s
-		fmt.Println("มีจำนวนเหรียญ 1 = ", math.Floor(sum1), " เหรียญ")
-	}
+func exit() {
 }
