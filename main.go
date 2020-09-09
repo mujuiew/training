@@ -13,44 +13,49 @@ var productName string
 var productID int
 var productPrice int
 var productAmount int
-var elements = map[string]map[string]int{
-	"Coke": map[string]int{
-		"id":     1,
-		"price":  12,
-		"amount": 0,
-	},
-	"Water": map[string]int{
-		"id":     2,
-		"price":  7,
-		"amount": 20,
-	},
-	"Milk": map[string]int{
-		"id":     3,
-		"price":  22,
-		"amount": 20,
-	},
+
+type product struct {
+	//ID     int
+	Name   string
+	Price  int
+	Amount int
+}
+
+var elements = map[int]product{
+	1: {"Coke", 18, 10},
+	2: {"Water", 7, 10},
+	3: {"Milk", 12, 10},
 }
 
 func main() {
 
 	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
 	fmt.Println("----\t", "----\t", "----\t", "----\t")
+	v := make([]product, 0, len(elements))
+	for _, value := range elements {
+		v = append(v, value)
+	}
 	for k := range elements {
+
 		if el, ok := elements[k]; ok {
-			fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
-			if productID == 0 || productID < el["id"] {
-				productID = el["id"]
-			}
+			fmt.Println(k, "\t", el.Name, "\t", el.Price, "\t", el.Amount)
+
 		}
 	}
 	choose()
 }
 func choose() {
+	for k := range elements {
+		if _, ok := elements[k]; ok {
+			if productID == 0 || productID < k {
+				productID = k
+			}
+		}
+	}
 	fmt.Print("\nหากต้องการเพิ่มสิน add ซื้อสินค้ากด get จบการทำงานกด exit: ")
 	fmt.Scanf("%s", &ch)
 	if ch == "add" {
 		addProduct()
-		getProduct()
 		choose()
 	} else if ch == "get" {
 		getProduct()
@@ -68,34 +73,32 @@ func addProduct() {
 	fmt.Scanf("%d", &productPrice)
 	fmt.Print("จำนวนสินค้า: ")
 	fmt.Scanf("%d", &productAmount)
-	elements[productName] = map[string]int{
-		"id":     productID + 1,
-		"price":  productPrice,
-		"amount": productAmount,
+	newID := productID + 1
+	elements[newID] = product{
+		productName, productPrice, productAmount,
 	}
+
 	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
 	fmt.Println("----\t", "----\t", "----\t", "----\t")
 	for k := range elements {
 		if el, ok := elements[k]; ok {
-			fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
+			fmt.Println(k, "\t", el.Name, "\t", el.Price, "\t", el.Amount)
 		}
 	}
 }
 func getProduct() {
-	fmt.Print("ใส่เงิน (บาทถ้วน): ")
+	fmt.Print("\nใส่เงิน (บาทถ้วน): ")
 	fmt.Scanf("%d", &money)
 	fmt.Println("จำนวนเงินของคุณคือ ", money, " บาท")
 	fmt.Println("\nสินค้าที่คุณสามารถเลือกซื้อได้\n ")
 	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
 	fmt.Println("----\t", "----\t", "----\t", "----\t")
+	x = false
 	for k := range elements {
 		if el, ok := elements[k]; ok {
-			if el["price"] <= money && el["amount"] > 0 {
-				fmt.Println(el["id"], "\t", k, "\t", el["price"], "\t", el["amount"])
+			if el.Price <= money && el.Amount > 0 {
+				fmt.Println(k, "\t", el.Name, "\t", el.Price, "\t", el.Amount)
 				x = true
-			} else {
-				fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
-				x = false
 			}
 		}
 	}
@@ -107,18 +110,20 @@ func getProduct() {
 		for k := range elements {
 			if el, ok := elements[k]; ok {
 				switch {
-				case el["price"] <= money && idProduct == el["id"] && el["amount"] > 0:
-					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el["price"], " บาท")
-					change = float64(money - el["price"])
+				case el.Price <= money && idProduct == k && el.Amount > 0:
+					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el.Price, " บาท")
+					change = float64(money - el.Price)
 					fmt.Println("\nกรุณารับเงินทอน : ", change, " บาท")
 					// cal()
-				case el["price"] > money && idProduct == el["id"]:
+				case el.Price > money && idProduct == k:
 					fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
-				case idProduct == el["id"] && el["amount"] < 1:
+				case idProduct == k && el.Amount < 1:
 					fmt.Println("\nขออภัย! สินค้าหมด")
 				}
 			}
 		}
+	} else {
+		fmt.Println("\nขออภัย! จำนวนเงินของท่าไม่เพียงพอ")
 	}
 }
 
