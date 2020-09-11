@@ -24,10 +24,10 @@ type product struct {
 var elements = map[int]product{
 	1: {"Coke", 18, 10},
 	2: {"Water", 7, 10},
-	3: {"Milk", 12, 10},
+	5: {"Milk", 12, 10},
 }
 
-func main() {
+func main5() {
 
 	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
 	fmt.Println("----\t", "----\t", "----\t", "----\t")
@@ -108,10 +108,15 @@ func getProduct() {
 		fmt.Scanf("%d", &idProduct)
 		fmt.Print("รหัสสินค้า : ", idProduct)
 		for k := range elements {
+
 			if el, ok := elements[k]; ok {
 				switch {
 				case el.Price <= money && idProduct == k && el.Amount > 0:
 					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el.Price, " บาท")
+					var p = &el.Amount
+					*p = *&el.Amount - 1
+					fmt.Println(el.Amount)
+
 					change = float64(money - el.Price)
 					fmt.Println("\nกรุณารับเงินทอน : ", change, " บาท")
 					// cal()
