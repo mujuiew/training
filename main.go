@@ -27,7 +27,7 @@ var elements = map[int]product{
 	5: {"Milk", 12, 10},
 }
 
-func main5() {
+func main() {
 
 	fmt.Println("ID\t", "Name\t", "Price\t", "Amount\t")
 	fmt.Println("----\t", "----\t", "----\t", "----\t")
@@ -113,8 +113,9 @@ func getProduct() {
 				switch {
 				case el.Price <= money && idProduct == k && el.Amount > 0:
 					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el.Price, " บาท")
-					var p = &el.Amount
-					*p = *&el.Amount - 1
+					// var p = &el.Amount
+					// *p = *&el.Amount - 1
+					el.Amount = *&el.Amount - 1
 					fmt.Println(el.Amount)
 
 					change = float64(money - el.Price)

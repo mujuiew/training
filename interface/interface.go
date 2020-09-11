@@ -66,7 +66,7 @@ func doSomething(act Activity) {
 	fmt.Println()
 }
 
-func main7() {
+func main() {
 	ca := cat{
 		food:   "fish",
 		amount: 9,
