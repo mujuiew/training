@@ -107,16 +107,18 @@ func getProduct() {
 		fmt.Print("\n-----\nกรุณาใส่รหัสสินค้า : ")
 		fmt.Scanf("%d", &idProduct)
 		fmt.Print("รหัสสินค้า : ", idProduct)
+
 		for k := range elements {
 
 			if el, ok := elements[k]; ok {
 				switch {
 				case el.Price <= money && idProduct == k && el.Amount > 0:
 					fmt.Println("\nสินค้าที่เลือกคือ ", k, " ราคา ", el.Price, " บาท")
-					// var p = &el.Amount
-					// *p = *&el.Amount - 1
-					el.Amount = *&el.Amount - 1
-					fmt.Println(el.Amount)
+					var p = *&el.Amount - 1
+					el.Amount = p
+					// el.Amount--
+					elements[k] = el
+					fmt.Println(p)
 
 					change = float64(money - el.Price)
 					fmt.Println("\nกรุณารับเงินทอน : ", change, " บาท")
