@@ -5,17 +5,18 @@ import (
 	"math"
 )
 
-func findMod(input float64) string {
-	if input == 0 {
-		return fmt.Sprintf("%.2f : all", input)
-	} else if math.Mod(input, 15) == 0 {
-		return fmt.Sprintf("%.2f : FizzBuzz", input)
-	} else if math.Mod(input, 5) == 0 {
-		return fmt.Sprintf("%.2f : Buzz", input)
-	} else if math.Mod(input, 3) == 0 {
-		return fmt.Sprintf("%.2f : Fizz", input)
+func findMod(input int) string {
+	n := float64(input)
+	if n == 0 {
+		return fmt.Sprint(input)
+	} else if math.Mod(n, 15) == 0 {
+		return fmt.Sprint(input, " : FizzBuzz")
+	} else if math.Mod(n, 5) == 0 {
+		return fmt.Sprint(input, " : Buzz")
+	} else if math.Mod(n, 3) == 0 {
+		return fmt.Sprint(input, " : Fizz")
 	} else {
-		return fmt.Sprintf("%.2f", input)
+		return fmt.Sprintf("%.0f", n)
 	}
 
 }
