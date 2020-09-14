@@ -2,13 +2,17 @@ package unittest
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_findMod(t *testing.T) {
-	for i := 0; i < 100; i++ {
-		result := findMod(i)
-		// assert.Equal(t, result, result)
-		t.Error(result)
-	}
+	result := findMod(6)
+	assert.Equal(t, "Buzz", result)
+
+}
+func Test_findMod2(t *testing.T) {
+	result := findMod(15)
+	assert.Equal(t, "FizzBuzz", result)
 
 }
