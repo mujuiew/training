@@ -14,5 +14,4 @@ func Test_findMod(t *testing.T) {
 func Test_findMod2(t *testing.T) {
 	result := findMod(15)
 	assert.Equal(t, "FizzBuzz", result)
-
 }
