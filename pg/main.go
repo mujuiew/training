@@ -14,11 +14,13 @@ import (
 )
 
 const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "payment"
+	host      = "localhost"
+	port      = 5432
+	user      = "postgres"
+	password  = "postgres"
+	dbname    = "payment"
+	layoutISO = "2006-01-02"
+	layoutUS  = "2006-01-02"
 )
 
 var psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+"password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -40,12 +42,12 @@ var rate Rate
 
 // Input ...
 type Input struct {
-	DisbursementAmount float64   `json:"disbursement_amount"`
-	NumberOfPayment    float64   `json:"number_of_payment"`
-	CalDate            time.Time `json:"cal_date"`
-	PaymentFrequency   float64   `json:"payment_frequency"`
-	PaymentUnit        string    `json:"payment_unit"`
-	AccountNumber      float64   `json:"account_number"`
+	DisbursementAmount float64 `json:"disbursement_amount"`
+	NumberOfPayment    float64 `json:"number_of_payment"`
+	CalDate            string  `json:"cal_date"`
+	PaymentFrequency   float64 `json:"payment_frequency"`
+	PaymentUnit        string  `json:"payment_unit"`
+	AccountNumber      float64 `json:"account_number"`
 }
 
 // Input2 ...
@@ -74,9 +76,13 @@ func personCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var in Input
 	_ = json.NewDecoder(r.Body).Decode(&in)
-	// json.NewEncoder(w).Encode(&in)
-	ss := "2020-05-01"
-	proname := fineProname(ss)
+
+	date := in.CalDate
+	t, _ := time.Parse(layoutISO, date)
+	caldate := t.Format(layoutUS)
+
+	proname := fineProname(caldate)
+
 	inrate := fineinrate(proname)
 	pmt := insertAc(in.AccountNumber, inrate, in.DisbursementAmount, in.NumberOfPayment)
 
