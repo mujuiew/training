@@ -24,5 +24,4 @@ func main() {
 	// ans := <-cal
 	var input string
 	fmt.Scanln(&input)
-	fmt.Printf("%.2f", <-cal)
 }
