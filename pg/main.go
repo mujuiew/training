@@ -32,13 +32,18 @@ type Rate struct {
 	PromotionName string  `json:"promotion_name"`
 }
 
+// Output ...
+type Output struct {
+	Promotionname string  `json:"promotion name"`
+	Interestrate  float64 `json:"interest rate"`
+	Number        float64 `json:"account number"`
+	Pmt           float64 `json:"Payment Amount with Nember of payment"`
+}
+
 // Promotion ...
 type Promotion struct {
 	PromotionName string `json:"promotion_name"`
 }
-
-var pro Promotion
-var rate Rate
 
 // Input ...
 type Input struct {
@@ -50,28 +55,9 @@ type Input struct {
 	AccountNumber      float64 `json:"account_number"`
 }
 
-// Input2 ...
-type Input2 struct {
-	Req Input `json:"rqbody"`
-}
+var pro Promotion
+var rate Rate
 
-func repoHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("postgres", psqlInfo)
-	rows, err := db.Query(
-		`SELECT rate, interest_rate, promotion_name FROM "Rate"`)
-	for rows.Next() {
-
-		var rate Rate
-		if err := rows.Scan(&rate.Rate, &rate.InterestRate, &rate.PromotionName); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintln(w, rate)
-	}
-	if err != nil {
-		panic(err)
-	}
-
-}
 func personCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var in Input
@@ -80,16 +66,20 @@ func personCreate(w http.ResponseWriter, r *http.Request) {
 	date := in.CalDate
 	t, _ := time.Parse(layoutISO, date)
 	caldate := t.Format(layoutUS)
-
 	proname := fineProname(caldate)
-
 	inrate := fineinrate(proname)
 	pmt := insertAc(in.AccountNumber, inrate, in.DisbursementAmount, in.NumberOfPayment)
 
-	fmt.Fprintf(w, "promotion_name = %v\n", proname)
-	fmt.Fprintf(w, "interest_rate  = %.2f\n", inrate)
-	fmt.Fprintf(w, "account_number = %.2f\n", in.NumberOfPayment)
-	fmt.Fprintf(w, "Payment Amount with Nember of payment %v = %.2f\n", in.NumberOfPayment, pmt)
+	inrate = math.Round(inrate*100) / 100
+	pmt = math.Round(pmt*100) / 100
+	output := Output{proname, inrate, in.AccountNumber, pmt}
+	js, err := json.Marshal(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+	// json.NewEncoder(w).Encode(output)
 }
 
 func fineProname(date string) string {
@@ -150,8 +140,8 @@ func main() {
 	}
 	fmt.Println("Successfully connected!")
 	r := mux.NewRouter()
-	r.HandleFunc("/dloan-payment/v1/calculate-installment-amount", repoHandler).Methods("GET")
-	r.HandleFunc("/person/create", personCreate).Methods("POST")
+
+	r.HandleFunc("/dloan-payment/v1/calculate-installment-amount", personCreate).Methods("POST")
 
 	http.ListenAndServe(":8080", r)
 
